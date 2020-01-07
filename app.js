@@ -61,20 +61,22 @@ function functionCaller(event){
     const productsInPriceRange =  findProductsInPriceRange(products_data, {min:minVal, max: maxVal});
     console.log(productsInPriceRange);
 
+    //create output
     let resultDiv = document.querySelector('#display-results');
     productsHTML = productsInPriceRange.map(function(product){
       return `
-        <a href="#" class="list-group-item list-group-item-action active">
+        <a href="#" class="list-group-item list-group-item-action">
           <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1">List group item heading</h5>
-            <small>3 days ago</small>
+            <h5 class="mb-1">${product.name}</h5>
+            <small>$${product.suggestedPrice}</small>
           </div>
-          <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
-          <small>Donec id elit non mi porta.</small>
+          <p class="mb-1">${product.description}</p>
         </a>
       `
     }).join(' ')
 
+    //print the output
+    resultDiv.innerHTML = productsHTML;
   }
 }
 
