@@ -78,7 +78,7 @@ function functionCaller(event){
   }
 }
 
-function printResults
+
 
 loadData();
 
