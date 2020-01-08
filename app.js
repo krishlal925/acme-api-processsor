@@ -7,7 +7,7 @@ let companies_data, products_data, offerings_data;
 let current_query_selection;
 let submitButton = document.querySelector('#submit');
 let groupedCompaniesByLetter;
-
+let companiesObj = {};
 //function #1
 function findProductsInPriceRange(products, user_input){
   let filteredProducts = products.filter(function(product){
@@ -20,7 +20,7 @@ function findProductsInPriceRange(products, user_input){
 
 //function #2
 function groupCompaniesByLetter(companies, firstLetter){
-  let companiesObj = {};
+
 
   companies.forEach(function(company){
     let key = company.name[0];
@@ -91,19 +91,17 @@ function showInputs({target}){
 function functionCaller(event){
   event.preventDefault();
   console.dir(event.target.form);
-
+  let resultDiv = document.querySelector('#display-results');
   //Price Range query
   if(current_query_selection === 'Price Range'){
 
     let minVal = event.target.form[1].value;
     let maxVal = event.target.form[2].value;
-    console.log(`min:${minVal}, max:${maxVal}`);
     const productsInPriceRange =  findProductsInPriceRange(products_data, {min:minVal, max: maxVal});
-    console.log(productsInPriceRange);
 
     //create output
-    let resultDiv = document.querySelector('#display-results');
-    productsHTML = productsInPriceRange.map(function(product){
+
+    let productsHTML = productsInPriceRange.map(function(product){
       return `
         <a href="#" class="list-group-item list-group-item-action">
           <div class="d-flex w-100 justify-content-between">
@@ -113,10 +111,29 @@ function functionCaller(event){
           <p class="mb-1">${product.description}</p>
         </a>
       `
-    }).join(' ')
+    }).join(' ');
 
     //print the output
     resultDiv.innerHTML = productsHTML;
+  }
+  //print groupCompaniesByLetter query
+  else if (current_query_selection === 'groupCompaniesByLetter'){
+    let selectedKey = event.target.form[3].value;
+    console.log(selectedKey);
+    console.dir(companiesObj[selectedKey]);
+
+    let companiesHTML = companiesObj[selectedKey].map(function(company){
+      return `
+        <a href="#" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">${company.name}</h5>
+            <small>${company.phone}</small>
+          </div>
+          <p class="mb-1">${company.catchPhrase}</p>
+        </a>
+      `
+    }).join(' ');
+    resultDiv.innerHTML = companiesHTML;
   }
 }
 
