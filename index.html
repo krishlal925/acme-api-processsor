@@ -25,11 +25,11 @@
             <select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref">
               <option selected>Choose...</option>
               <option value="Price Range">Price Range</option>
-              <option value="2">Two</option>
+              <option value="groupCompaniesByLetter">List Companies by 1st letter</option>
               <option value="3">Three</option>
             </select>
 
-            <div id="price-range-input" class= "d-none input_divs">
+            <div id="price-range-input" class= "d-none input_divs ">
               <div class="form-group" >
                 <label for="minPrice">Min Price</label>
                 <input type="text" class="form-control" id="minPrice" placeholder="Min">
@@ -39,7 +39,15 @@
                 <input type="text" class="form-control" id="maxPrice" placeholder="Max">
               </div>
             </div>
-            <button type="submit" class="btn btn-primary my-1 d-none input_divs" id='submit'>Submit</button>
+            <div id="company-list-first-letter" class= "d-none input_divs ">
+              <label class="my-1 mr-2" for="inlineFormCustomSelectPref">First letter of company name:</label>
+              <select class="custom-select my-1 mr-sm-2" id="companyListFirstLetter">
+              </select>
+            </div>
+            <div class= "clearfix">
+              <button type="submit" class="btn btn-primary my-1 d-none input_divs" id='submit'>Submit</button>
+            </div>
+
           </form>
         </div>
         <div class="col-sm" >

@@ -6,6 +6,7 @@ let offerings_url = 'https://acme-users-api-rev.herokuapp.com/api/offerings';
 let companies_data, products_data, offerings_data;
 let current_query_selection;
 let submitButton = document.querySelector('#submit');
+let groupedCompaniesByLetter;
 
 //function #1
 function findProductsInPriceRange(products, user_input){
@@ -16,6 +17,43 @@ function findProductsInPriceRange(products, user_input){
   return filteredProducts;
 }
 
+
+//function #2
+function groupCompaniesByLetter(companies, firstLetter){
+  let companiesObj = {};
+
+  companies.forEach(function(company){
+    let key = company.name[0];
+
+    //add company to the specific key if the key already exists
+    if (companiesObj[key]){
+      companiesObj[key].push(company)
+    }
+    //create the key value pair if it doesn't exist yet
+    else{
+      companiesObj[key] =[];
+      companiesObj[key].push(company);
+    }
+  });
+
+  //create dropdown menu based on keys
+  let keys = Object.keys(companiesObj);
+  keys.sort();
+  let dropDownLettersListHTML = keys.map(function(key){
+    return `
+    <option value="${key}">${key}</option>
+    `
+  }).join(' ');
+
+  let dropDownLettersList = document.querySelector('#companyListFirstLetter');
+  console.log(dropDownLettersList);
+  dropDownLettersList.innerHTML = dropDownLettersListHTML;
+
+
+  return companiesObj;
+}
+
+
 async function loadData(){
   await Promise.all([axios.get(companies_url), axios.get(products_url), axios.get(offerings_url)])
   .then(function(responses){
@@ -23,9 +61,8 @@ async function loadData(){
     console.log(products_data);
   })
 
-
+  groupedCompaniesByLetter= groupCompaniesByLetter(companies_data);
 }
-
 
 
 function showInputs({target}){
@@ -41,9 +78,12 @@ function showInputs({target}){
   if (current_query_selection === "Price Range"){
     let inputs = document.querySelector('#price-range-input');
     inputs.classList.remove('d-none');
-
-    //let submitButton = document.querySelector('#submit');
-    submitButton.classList.remove('d-none')
+    submitButton.classList.remove('d-none');
+  }
+  else if(current_query_selection === "groupCompaniesByLetter"){
+    let inputs = document.querySelector('#company-list-first-letter');
+    inputs.classList.remove('d-none');
+    submitButton.classList.remove('d-none');
   }
 }
 
