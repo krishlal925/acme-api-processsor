@@ -7,7 +7,10 @@ let companies_data, products_data, offerings_data;
 let current_query_selection;
 let submitButton = document.querySelector('#submit');
 let groupedCompaniesByLetter;
-let companiesObj = {};
+let groupedCompaniesByState;
+
+
+
 //function #1
 function findProductsInPriceRange(products, user_input){
   let filteredProducts = products.filter(function(product){
@@ -20,7 +23,7 @@ function findProductsInPriceRange(products, user_input){
 
 //function #2
 function groupCompaniesByLetter(companies, firstLetter){
-
+  let companiesObj = {};
 
   companies.forEach(function(company){
     let key = company.name[0];
@@ -49,6 +52,39 @@ function groupCompaniesByLetter(companies, firstLetter){
   console.log(dropDownLettersList);
   dropDownLettersList.innerHTML = dropDownLettersListHTML;
 
+  return companiesObj;
+}
+
+
+//function #3
+function groupCompaniesByState(companies){
+  let companiesObj= {};
+  companies.forEach(function(company){
+    let key = company.state;
+
+    //add company to the specific key if the key already exists
+    if (companiesObj[key]){
+      companiesObj[key].push(company)
+    }
+    //create the key value pair if it doesn't exist yet
+    else{
+      companiesObj[key] =[];
+      companiesObj[key].push(company);
+    }
+  });
+
+  //create dropdown menu based on keys
+  let keys = Object.keys(companiesObj);
+  keys.sort();
+  let dropDownLettersListHTML = keys.map(function(key){
+    return `
+    <option value="${key}">${key}</option>
+    `
+  }).join(' ');
+
+  let dropDownList = document.querySelector('#companyListByState');
+  console.log(dropDownList);
+  dropDownList.innerHTML = dropDownLettersListHTML;
 
   return companiesObj;
 }
@@ -61,7 +97,8 @@ async function loadData(){
     console.log(products_data);
   })
 
-  groupedCompaniesByLetter= groupCompaniesByLetter(companies_data);
+  //groupedCompaniesByState= groupCompaniesByState(companies_data);
+  //console.log(groupedCompaniesByState);
 }
 
 
@@ -80,18 +117,30 @@ function showInputs({target}){
     inputs.classList.remove('d-none');
     submitButton.classList.remove('d-none');
   }
+  //if group by first letter is chosen, show corresponding inputs
   else if(current_query_selection === "groupCompaniesByLetter"){
+    groupedCompaniesByLetter= groupCompaniesByLetter(companies_data);
+
     let inputs = document.querySelector('#company-list-first-letter');
+    inputs.classList.remove('d-none');
+    submitButton.classList.remove('d-none');
+  }
+  //if group by state is chosen, show corresponding inputs
+  else if(current_query_selection === "groupCompaniesByState"){
+    groupedCompaniesByState= groupCompaniesByState(companies_data);
+
+    let inputs = document.querySelector('#company-list-state');
     inputs.classList.remove('d-none');
     submitButton.classList.remove('d-none');
   }
 }
 
 //runs selected query
-function functionCaller(event){
+function submitInput(event){
   event.preventDefault();
   console.dir(event.target.form);
   let resultDiv = document.querySelector('#display-results');
+
   //Price Range query
   if(current_query_selection === 'Price Range'){
 
@@ -100,7 +149,6 @@ function functionCaller(event){
     const productsInPriceRange =  findProductsInPriceRange(products_data, {min:minVal, max: maxVal});
 
     //create output
-
     let productsHTML = productsInPriceRange.map(function(product){
       return `
         <a href="#" class="list-group-item list-group-item-action">
@@ -116,13 +164,14 @@ function functionCaller(event){
     //print the output
     resultDiv.innerHTML = productsHTML;
   }
-  //print groupCompaniesByLetter query
+  //groupCompaniesByLetter query
   else if (current_query_selection === 'groupCompaniesByLetter'){
     let selectedKey = event.target.form[3].value;
     console.log(selectedKey);
-    console.dir(companiesObj[selectedKey]);
+    console.dir(groupedCompaniesByLetter[selectedKey]);
 
-    let companiesHTML = companiesObj[selectedKey].map(function(company){
+    //create output
+    let companiesHTML = groupedCompaniesByLetter[selectedKey].map(function(company){
       return `
         <a href="#" class="list-group-item list-group-item-action">
           <div class="d-flex w-100 justify-content-between">
@@ -133,18 +182,40 @@ function functionCaller(event){
         </a>
       `
     }).join(' ');
+
+    //print output
+    resultDiv.innerHTML = companiesHTML;
+  }
+  //groupCompanies by State query
+  else if (current_query_selection === 'groupCompaniesByState'){
+    let selectedKey = event.target.form[4].value;
+    console.log(selectedKey);
+    console.dir(groupedCompaniesByState[selectedKey]);
+
+    //create output
+    let companiesHTML = groupedCompaniesByState[selectedKey].map(function(company){
+      return `
+        <a href="#" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">${company.name}</h5>
+            <small>${company.phone}</small>
+          </div>
+          <p class="mb-1">${company.catchPhrase}</p>
+        </a>
+      `
+    }).join(' ');
+
+    //print output
     resultDiv.innerHTML = companiesHTML;
   }
 }
-
-
 
 loadData();
 
 let searchQuery = document.querySelector(`#inlineFormCustomSelectPref`);
 searchQuery.addEventListener('change', showInputs)
 
-submitButton.addEventListener('click', functionCaller)
+submitButton.addEventListener('click', submitInput)
 
 
 
